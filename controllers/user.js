@@ -15,6 +15,7 @@ exports.register = async (req, res) => {
         .json({ success: false, message: "User already exists" });
     }
 
+    console.log(cloudinary)
     const myCloud = await cloudinary.v2.uploader.upload(avatar, {
       folder: "avatars",
     });
@@ -25,8 +26,10 @@ exports.register = async (req, res) => {
       password,
       avatar: { public_id: myCloud.public_id, url: myCloud.secure_url },
     });
+    console.log("user", user)
 
     const token = await user.generateToken();
+    console.log(token, "token")
 
     const options = {
       expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
@@ -39,6 +42,7 @@ exports.register = async (req, res) => {
       token,
     });
   } catch (error) {
+
     res.status(500).json({
       success: false,
       message: error.message,
@@ -83,9 +87,11 @@ exports.login = async (req, res) => {
       token,
     });
   } catch (error) {
+    console.log(error)
     res.status(500).json({
       success: false,
       message: error.message,
+
     });
   }
 };
