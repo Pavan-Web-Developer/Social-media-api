@@ -1,9 +1,13 @@
+
 const express = require("express");
 const app = express();
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const cors = require('cors');
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:3000', "https://vercel.com/mrpavanchauhans-projects/social-media/Be3veE8WGGEZ5L5pPU7fG5GJERWN"],// Replace with the URL of your React app
+  credentials: true, // Allow credentials (cookies) to be sent
+}));
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config({ path: "backend/config/config.env" });
 }

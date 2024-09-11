@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 exports.connectDatabase = () => {
   mongoose
-    .connect("mongodb+srv://jordanpac97:8gApq9kb65uiAU6q@cluster0.5vqoh.mongodb.net/", {
+    .connect(process.env.CLUSTER_MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000 // Increase the timeout to 5 seconds

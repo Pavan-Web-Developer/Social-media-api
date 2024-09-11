@@ -15,7 +15,6 @@ exports.register = async (req, res) => {
         .json({ success: false, message: "User already exists" });
     }
 
-    console.log(cloudinary)
     const myCloud = await cloudinary.v2.uploader.upload(avatar, {
       folder: "avatars",
     });
@@ -26,10 +25,8 @@ exports.register = async (req, res) => {
       password,
       avatar: { public_id: myCloud.public_id, url: myCloud.secure_url },
     });
-    console.log("user", user)
 
     const token = await user.generateToken();
-    console.log(token, "token")
 
     const options = {
       expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
@@ -78,16 +75,30 @@ exports.login = async (req, res) => {
 
     const options = {
       expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-      httpOnly: true,
+      // httpOnly: true
     };
+    // Set token cookie
+    res.cookie("token", token, options);
 
-    res.status(200).cookie("token", token, options).json({
+    // Set user cookie (make sure not to store sensitive user info in a cookie)
+    res.cookie("user", JSON.stringify(user), {
+      ...options,
+      // httpOnly: false, ?// This allows the cookie to be accessible in the browser (not for sensitive data)
+    });
+
+    // Send response with token and user
+    res.status(200).json({
       success: true,
       user,
       token,
     });
+    // res.status(200).cookie("token", token, options).json({
+    //   success: true,
+    //   user,
+    //   token,
+    // })
+
   } catch (error) {
-    console.log(error)
     res.status(500).json({
       success: false,
       message: error.message,
