@@ -111,13 +111,32 @@ exports.login = async (req, res) => {
 
 exports.logout = async (req, res) => {
   try {
-    res
-      .status(200)
-      .cookie("token", null, { expires: new Date(Date.now()), httpOnly: true })
-      .json({
-        success: true,
-        message: "Logged out",
-      });
+    const options = {
+      expires: new Date(Date.now()), // Expire the cookie immediately
+      // httpOnly: true, // Keep this true to prevent client-side access (for token)
+      secure: true,  // Should match the setting used when setting the cookie (true for HTTPS)
+      sameSite: 'none', // Should match the original cookie settings
+    };
+    // const options = { expires: new Date(Date.now()), httpOnly: true }
+    res.cookie("token", "", options);
+
+    // Set user cookie (make sure not to store sensitive user info in a cookie)
+    res.cookie("user", "", {
+      ...options,
+      // httpOnly: false, ?// This allows the cookie to be accessible in the browser (not for sensitive data)
+    });
+    // Send response with token and user
+    res.status(200).json({
+      success: true,
+      message: "Logged out",
+    });
+    // res
+    //   .status(200)
+    //   .cookie("token", null,)
+    //   .json({
+    //     success: true,
+    //     message: "Logged out",
+    //   });
   } catch (error) {
     res.status(500).json({
       success: false,
